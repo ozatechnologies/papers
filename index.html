@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Node Network Search</title>
+  <style>
+    /* Reset styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Full screen layout */
+    body, html {
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Background Canvas */
+    #network-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      background: #0d0d2b;
+    }
+
+    /* Centered search container */
+    .search-container {
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+      padding: 20px;
+      background-color: rgba(0, 0, 0, 0.6);
+      border-radius: 8px;
+      color: #00d1b2;
+      z-index: 1;
+    }
+
+    /* Search title */
+    .search-container h1 {
+      font-size: 24px;
+      color: #00d1b2;
+    }
+
+    /* Custom styling for search elements */
+    .gsc-control-cse {
+      background-color: #1f4068;
+    }
+
+    input.gsc-input, .gsc-search-button-v2 {
+      border-radius: 4px;
+      border: none;
+    }
+
+    /* Search result links */
+    a.gs-title {
+      color: #00d1b2 !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Network animation background -->
+  <canvas id="network-canvas"></canvas>
+
+  <!-- Google Custom Search Engine -->
+  <div class="search-container">
+     <p id="demo"><h1>PAPER Index</h1></p> 
+     
+
+<div class="typing-container">
+  <span class="typing-text">Protocol for Academic Paper Exchange and Research Sharing</span>
+</div>
+
+    <script async src="https://cse.google.com/cse.js?cx=4535451f88c114797"></script>
+    <div class="gcse-search"></div>
+  </div>
+
+  <!-- Node Network Animation Script -->
+  <script>
+    const canvas = document.getElementById('network-canvas');
+    const ctx = canvas.getContext('2d');
+    let particlesArray = [];
+    const numberOfParticles = 200; // Adjust number of particles for performance
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Create particle class
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 1;
+        this.speedX = Math.random() * 3 - 1.5;
+        this.speedY = Math.random() * 3 - 1.5;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+        if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+      }
+      draw() {
+        ctx.fillStyle = '#00d1b2';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+
+    // Initialize particles
+    function init() {
+      particlesArray = [];
+      for (let i = 0; i < numberOfParticles; i++) {
+        particlesArray.push(new Particle());
+      }
+    }
+    init();
+
+    // Check for proximity and draw connecting lines
+    function connect() {
+      let opacityValue = 1;
+      for (let a = 0; a < particlesArray.length; a++) {
+        for (let b = a; b < particlesArray.length; b++) {
+          let dx = particlesArray[a].x - particlesArray[b].x;
+          let dy = particlesArray[a].y - particlesArray[b].y;
+          let distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 150) {
+            opacityValue = 1 - (distance / 150);
+            ctx.strokeStyle = `rgba(0, 209, 178, ${opacityValue})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+            ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    // Animate particles
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < particlesArray.length; i++) {
+        particlesArray[i].update();
+        particlesArray[i].draw();
+      }
+      connect();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Handle resize
+    window.addEventListener('resize', function() {
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+      init();
+    });
+  </script>
+</body>
+</html>
